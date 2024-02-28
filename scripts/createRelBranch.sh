@@ -4,11 +4,6 @@ workDir="$(pwd)"
 aqavitGitTag=$1
 allJDKVersionTags=$2
 teFile="./testenv/testenv.properties"
-jdk22Tag=""
-jdk21Tag=""
-jdk17Tag=""
-jdk11Tag=""
-jdk8Tag=""
 
 usage ()
 {
@@ -21,17 +16,20 @@ setProperty(){
   mv $teFile.tmp $teFile
 }
 
-# Parse allJDKVersionTags into individual version tags TODO
-
-# cd "${workDir}/aqa-tests"
+cd "${workDir}/aqa-tests"
 git checkout -b "${gitTag}-release" "${aqavitGitTag}"
 
-# Make changes to testenv/testenv.properties file
-setProperty JDK8_BRANCH $jdk8Tag
-setProperty JDK11_BRANCH $jdk11Tag
-setProperty JDK17_BRANCH $jdk17Tag
-setProperty JDK21_BRANCH $jdk21Tag
-setProperty JDK22_BRANCH $jdk22Tag
+# Parse allJDKVersionTags into individual version tags
+echo "2nd parameter is $allJDKVersionTags"
+IFS=';' read -ra versionArray <<< "$allJDKVersionTags"
+
+for i in "${versionArray[@]}"
+do
+    echo $i
+    jdkVersion=${i:0:2}
+    workingBranch="JDK${jdkVersion}_BRANCH"
+    setProperty $workingBranch $i
+done
 
 # Stage changes
 git commit -m "Update testenv.properties"
