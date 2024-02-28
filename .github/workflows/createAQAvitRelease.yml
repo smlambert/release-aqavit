@@ -1,0 +1,22 @@
+name: 'Create-AQAvit-Release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      aqavitTagValue:
+        description: The value of the tag to use (such as v1.0.0)
+        required: true
+
+jobs:
+  createAQAvitRelease:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Run tagRepos.sh
+        run: ./tagRepos.sh ${{ inputs.aqavitTagValue }}
+
+      - name: Run createRelBranch.sh
+        run: ./createRelBranch.sh ${{ inputs.aqavitTagValue }}
+        
