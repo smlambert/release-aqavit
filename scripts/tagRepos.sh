@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 workDir="$(pwd)"
-gitTag="v0.9.8"
+gitTag=$1
+
+usage ()
+{
+	echo 'Usage : tagRepos.sh gitTag'
+}
 
 for repoName in "aqa-tests" "TKG" "aqa-systemtest" "aqa-test-tools" "STF" "bumblebench"
 do
