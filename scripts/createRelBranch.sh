@@ -7,8 +7,8 @@ teFile="./testenv/testenv.properties"
 
 usage ()
 {
-	echo 'Usage : createRelBranch.sh aqavitGitTag jdk22Tag,jdk21Tag,jdk17Tag,jdk11Tagjdk8Tag '
- 	echo 'Usage : createRelBranch.sh v1.0.1 22.0.0,21.0.3,17.0.11,11.0.23,8u411 '
+	echo 'Usage : createRelBranch.sh aqavitGitTag jdk22Tag,jdk21Tag,jdk17Tag,jdk11Tagjdk8Tag isDryRun[0|1]'
+ 	echo 'Usage : createRelBranch.sh v1.0.1 22.0.0,21.0.3,17.0.11,11.0.23,8u411 0'
 }
 
 setProperty(){
@@ -52,4 +52,9 @@ done
 git commit -m "Update testenv.properties"
 
 # Push your newly created branch to remote repository.
-#git push -u origin "${aqavitGitTag}-release"
+if [ $isDryRun -eq 0 ]; then
+    echo "Not pushing changes to ${aqavitGitTag}-release"
+else
+    git push -u origin "${aqavitGitTag}-release"
+fi
+
