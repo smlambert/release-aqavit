@@ -9,6 +9,9 @@ on:
       jdkReleaseTags:
         description: The set of JDK release prefix tags expected (such as 22.0.0,21.0.3,17.0.11,11.0.23,8u411)
         required: true
+      isDryRun:
+        description: 0 or 1, whether to push tags and changes to repos, or not
+        required: true
 
 jobs:
   createAQAvitRelease:
