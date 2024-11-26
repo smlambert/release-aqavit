@@ -9,7 +9,7 @@ usage ()
  	echo 'Usage : tagRepos.sh v1.0.0 0'
 }
 
-for repoName in "aqa-tests" "TKG" "aqa-systemtest" "aqa-test-tools" "STF" "bumblebench"
+for repoName in "aqa-tests" "TKG" "aqa-systemtest" "aqa-test-tools" "STF" "bumblebench" "openj9-systemtest"
 do
         repo="https://github.com/adoptium/${repoName}.git"
         echo "${repo}"
