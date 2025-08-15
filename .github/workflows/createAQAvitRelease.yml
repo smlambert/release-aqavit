@@ -6,12 +6,20 @@ on:
       aqavitTagValue:
         description: The value of the tag to use (such as v1.0.0)
         required: true
+        type: string
+      reposToTag:
+        description: Comma-separated set of repos to tag (such as adoptium/aqa-tests,adoptium/TKG,adoptium/STF)
+        required: false
+        default: 'adoptium/aqa-tests,adoptium/TKG,adoptium/STF,adoptium/aqa-systemtest,adoptium/openj9-systemtest,adoptium/bumblebench'
+        type: string
       jdkReleaseTags:
-        description: The set of JDK release prefix tags expected (such as 22.0.0,21.0.3,17.0.11,11.0.23,8u411)
-        required: true
+        description: Comma-separated set of JDK release prefix tags expected (such as 22.0.0,21.0.3,17.0.11,11.0.23,8u411)
+        required: false
+        type: string
       isDryRun:
         description: 0 or 1, whether to push tags and changes to repos, or not
-        required: true
+        required: false
+        type: boolean
 
 jobs:
   createAQAvitRelease:
@@ -23,6 +31,6 @@ jobs:
       - name: Run tagRepos.sh
         run: ./tagRepos.sh ${{ inputs.aqavitTagValue }}
 
-      - name: Run createRelBranch.sh
-        run: ./createRelBranch.sh ${{ inputs.aqavitTagValue }} ${{ inputs.jdkReleaseTags }}
+#      - name: Run createRelBranch.sh
+#        run: ./createRelBranch.sh ${{ inputs.aqavitTagValue }} ${{ inputs.jdkReleaseTags }}
         
