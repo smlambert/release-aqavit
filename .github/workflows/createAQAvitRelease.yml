@@ -10,27 +10,49 @@ on:
       reposToTag:
         description: Comma-separated set of repos to tag (such as adoptium/aqa-tests,adoptium/TKG,adoptium/STF)
         required: false
-        default: 'adoptium/aqa-tests,adoptium/TKG,adoptium/STF,adoptium/aqa-systemtest,adoptium/openj9-systemtest,adoptium/bumblebench'
+        default: 'adoptium/aqa-tests,adoptium/TKG,adoptium/STF,adoptium/aqa-systemtest,adoptium/aqa-test-tools,adoptium/bumblebench,adoptium/openj9-systemtest'
         type: string
       jdkReleaseTags:
         description: Comma-separated set of JDK release prefix tags expected (such as 22.0.0,21.0.3,17.0.11,11.0.23,8u411)
-        required: false
+        required: true
         type: string
       isDryRun:
-        description: 0 or 1, whether to push tags and changes to repos, or not
+        description: Whether to push tags and changes to repos, or not
         required: false
+        default: true
+        type: boolean
+      isPreRelease:
+        description: Whether to mark created GitHub releases as pre-releases
+        required: false
+        default: false
         type: boolean
 
 jobs:
   createAQAvitRelease:
     runs-on: ubuntu-latest
+    env:
+      DRY_RUN_FLAG: ${{ inputs.isDryRun && '1' || '0' }}
+      PRE_RELEASE_FLAG: ${{ inputs.isPreRelease && '1' || '0' }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      - name: Run tagRepos.sh
-        run: ./tagRepos.sh ${{ inputs.aqavitTagValue }}
+      - name: Install GitHub CLI
+        run: sudo apt-get update && sudo apt-get install -y gh
 
-#      - name: Run createRelBranch.sh
-#        run: ./createRelBranch.sh ${{ inputs.aqavitTagValue }} ${{ inputs.jdkReleaseTags }}
-        
+      - name: Make scripts executable
+        run: chmod +x ./scripts/tagRepos.sh ./scripts/createRelBranch.sh ./scripts/createRelease.sh
+
+      - name: Run tagRepos.sh
+        shell: bash
+        run: |
+          repo_names="$(echo "${{ inputs.reposToTag }}" | sed 's#adoptium/##g')"
+          ./scripts/tagRepos.sh "${{ inputs.aqavitTagValue }}" "${DRY_RUN_FLAG}" "${repo_names}"
+
+      - name: Run createRelBranch.sh
+        run: ./scripts/createRelBranch.sh "${{ inputs.aqavitTagValue }}" "${{ inputs.jdkReleaseTags }}" "${DRY_RUN_FLAG}"
+
+      - name: Run createRelease.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/createRelease.sh "${{ inputs.aqavitTagValue }}" "${{ inputs.reposToTag }}" "${DRY_RUN_FLAG}" "${PRE_RELEASE_FLAG}"
